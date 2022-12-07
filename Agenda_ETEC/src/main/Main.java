@@ -6,6 +6,7 @@
 package main;
 
 import View.InicioGUI;
+import View.Splash_GUI;
 
 /**
  *
@@ -16,8 +17,8 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-                       new InicioGUI().setVisible(true);
+    public static void main(String[] args) {           
+                       new Splash_GUI().setVisible(true);
 
     }
     

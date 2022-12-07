@@ -10,11 +10,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane; 
+import javax.swing.table.DefaultTableModel;
 
 public class InicioGUI extends javax.swing.JFrame {
  static int cod;
@@ -25,7 +28,56 @@ public class InicioGUI extends javax.swing.JFrame {
   String url2 = "jdbc:mysql://localhost/aprender"; // enderço do BD
   String username = "root";        //nome de um usuário de seu BD
   String password = "";  // senha do BD
+    
+  //atualiza tabela
+  
+  public static DefaultTableModel  cliente(ResultSet rs) {
+        try {
+           ResultSetMetaData metaData = rs.getMetaData();
+         int numberOfColumns = metaData.getColumnCount();
+            Vector columnNames = new Vector();
+       // AS LINHAS ABAIXO SÃO REFERENTES AOS CAMPOS DA TABELA CLIENTE
+            columnNames.addElement("Código");
+            columnNames.addElement("Nome");
+            columnNames.addElement("E-mail");
+            columnNames.addElement("Telefone");
+         
+            Vector rows = new Vector();
+            while (rs.next()) {
+                Vector newRow = new Vector();
+                for (int i = 1; i <= numberOfColumns; i++) {
+                    newRow.addElement(rs.getObject(i));
+                }
+                rows.addElement(newRow);
+            }
+           return new DefaultTableModel(rows, columnNames);
+       } catch (Exception e) {
 
+           return null;
+        }
+        }
+
+  
+    public void refresh(){
+    
+try{
+   Connection conn;
+          conn = (Connection) DriverManager.getConnection(url2, username, password);
+    System.out.println("realizado");
+            String sql = "SELECT * FROM cliente;";
+PreparedStatement pst = (PreparedStatement) conn.prepareStatement(sql);
+ResultSet rs = pst.executeQuery();
+tabela.setModel(cliente(rs));
+}
+catch(Exception e){
+JOptionPane.showMessageDialog(null,"não conseguiu atualizar a tabela");
+}    
+    } 
+
+
+  
+  
+  //fim tabela
     public InicioGUI() {
         initComponents();
     }
@@ -72,15 +124,17 @@ public class InicioGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
 
+        jPanel1.setBackground(new java.awt.Color(255, 153, 153));
         jPanel1.setLayout(null);
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel1.setText("Agenda");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(190, 40, 37, 14);
+        jLabel1.setBounds(190, 30, 130, 30);
 
         jLabel2.setText("Nome:");
         jPanel1.add(jLabel2);
-        jLabel2.setBounds(25, 58, 31, 14);
+        jLabel2.setBounds(25, 58, 60, 14);
 
         nome1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -92,13 +146,13 @@ public class InicioGUI extends javax.swing.JFrame {
 
         jLabel3.setText("E-mail:");
         jPanel1.add(jLabel3);
-        jLabel3.setBounds(25, 89, 32, 14);
+        jLabel3.setBounds(25, 89, 60, 14);
         jPanel1.add(email1);
         email1.setBounds(110, 90, 265, 20);
 
         jLabel4.setText("Telefone:");
         jPanel1.add(jLabel4);
-        jLabel4.setBounds(25, 130, 46, 14);
+        jLabel4.setBounds(25, 130, 70, 14);
         jPanel1.add(fone1);
         fone1.setBounds(110, 120, 90, 20);
 
@@ -109,7 +163,7 @@ public class InicioGUI extends javax.swing.JFrame {
             }
         });
         jPanel1.add(cadas);
-        cadas.setBounds(133, 179, 81, 23);
+        cadas.setBounds(160, 180, 130, 23);
 
         fechar.setText("Fechar");
         fechar.addActionListener(new java.awt.event.ActionListener() {
@@ -118,7 +172,7 @@ public class InicioGUI extends javax.swing.JFrame {
             }
         });
         jPanel1.add(fechar);
-        fechar.setBounds(289, 0, 65, 23);
+        fechar.setBounds(340, 10, 100, 23);
 
         jTabbedPane1.addTab("Cadastrar", jPanel1);
 
@@ -275,7 +329,7 @@ public class InicioGUI extends javax.swing.JFrame {
            fone1.setText("");
         }
 
-       
+        refresh();
               
 
       
@@ -402,7 +456,8 @@ public class InicioGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"Digite os dados corretamente","ERRO",0);
             fone2.setText("");
         }    
-
+        
+        refresh();
         //fecha---------------------------
     }//GEN-LAST:event_AlterarActionPerformed
 
@@ -444,7 +499,7 @@ public class InicioGUI extends javax.swing.JFrame {
 
         }
 
-        
+        refresh();
         //fim_______________________________________
     }//GEN-LAST:event_ExcluirActionPerformed
 
